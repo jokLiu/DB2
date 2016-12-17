@@ -51,9 +51,11 @@ public class CreateAndPopulate {
 
 	private void registerDriver() {
 		try {
-			System.setProperty("jdbc.drivers", "org.postgresql.Driver");
+
+			// Load the PostgreSQL JDBC driver
 			Class.forName("org.postgresql.Driver");
-		} catch (ClassNotFoundException e) {
+
+		} catch (ClassNotFoundException ex) {
 			System.out.println("Driver not found");
 			System.exit(1);
 		}
@@ -82,12 +84,11 @@ public class CreateAndPopulate {
 			PreparedStatement del = conn.prepareStatement("DROP SCHEMA ? CASCADE;");
 			del.setString(1, "Child");
 			del.executeQuery();
-			/*del.setString(1, "SantasLittleHelper");
-			del.executeQuery();
-			del.setString(1, "Gift");
-			del.executeQuery();
-			del.setString(1, "Present");
-			del.executeQuery();*/
+			/*
+			 * del.setString(1, "SantasLittleHelper"); del.executeQuery();
+			 * del.setString(1, "Gift"); del.executeQuery(); del.setString(1,
+			 * "Present"); del.executeQuery();
+			 */
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
