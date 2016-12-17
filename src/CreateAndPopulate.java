@@ -81,8 +81,8 @@ public class CreateAndPopulate {
 		System.out.println("Deleting all the tables");
 
 		try {
-			PreparedStatement del = conn.prepareStatement("DROP SCHEMA ? CASCADE;");
-			del.setString(1, "Child");
+			PreparedStatement del = conn.prepareStatement("DROP SCHEMA Child CASCADE;");
+			//del.setString(1, "Child");
 			del.executeQuery();
 			/*
 			 * del.setString(1, "SantasLittleHelper"); del.executeQuery();
