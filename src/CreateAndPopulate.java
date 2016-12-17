@@ -21,7 +21,9 @@ public class CreateAndPopulate {
 		this.conn = conn;
 		registerDriver();
 		connectServer();
+
 		deleteTables();
+		newTables();
 
 	}
 
@@ -81,17 +83,81 @@ public class CreateAndPopulate {
 		System.out.println("Deleting all the tables");
 
 		try {
-			PreparedStatement del = conn.prepareStatement("DROP SCHEMA Child CASCADE;");
-			//del.setString(1, "Child");
-			del.executeQuery();
-			/*
-			 * del.setString(1, "SantasLittleHelper"); del.executeQuery();
-			 * del.setString(1, "Gift"); del.executeQuery(); del.setString(1,
-			 * "Present"); del.executeQuery();
-			 */
+			PreparedStatement del = conn.prepareStatement("DROP SCHEMA public CASCADE;");
+			del.execute();
+			
+			PreparedStatement setClean = conn.prepareStatement("CREATE SCHEMA public;");
+			setClean.execute();
+			
+		
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private void newTables()
+	{
+		createTables();
+	}
+	
+	private void createTables()
+	{
+		
+		try {
+			
+			
+			String childTable   = "CREATE TABLE Child(" +
+								  "cid 		INTEGER," +
+								  "name 		CHAR(30) 	NOT NULL," +
+								  "address 	CHAR(30) 	NOT NULL," +
+								  "PRIMARY KEY (cid) " +
+								  ");";
+			
+			String helperTable = "CREATE TABLE SantasLittleHelper(" +
+					 			  "slhid	INTEGER," +
+					 			  "name 	CHAR(30) NOT NULL," +
+					 			  "PRIMARY KEY (slhid)" +
+					 			  ");";
+			
+			String giftTable   = "CREATE TABLE Gift(" +
+								  "gid		INTEGER," +
+								  "DESCRIPTION TEXT," +
+								  "PRIMARY KEY (gid)" +
+								  ");";
+			
+			String presentTable = "CREATE TABLE Present(" +
+								  "gid		INTEGER," +
+								  "cid 		INTEGER," +
+								  "slhid	INTEGER," +
+								  
+								  "FOREIGN KEY (gid) REFERENCES Gift(gid) " +
+								  	"ON DELETE CASCADE " +
+								  	"ON UPDATE CASCADE," +
+								  
+								  "FOREIGN KEY (cid) REFERENCES Child(cid) " +
+								  	"ON DELETE RESTRICT " +// On delete cascade
+								  	"ON UPDATE CASCADE, " +
+								  									  
+								  "FOREIGN KEY (slhid) REFERENCES SantasLittleHelper(slhid) " +
+								  	"ON DELETE CASCADE " +
+								  	"ON UPDATE CASCADE " +
+		
+								  ");";
+			
+			 PreparedStatement createChild = conn.prepareStatement(childTable);
+			 PreparedStatement createHelper = conn.prepareStatement(helperTable);
+			 PreparedStatement createGift = conn.prepareStatement(giftTable);
+			 PreparedStatement createPresent = conn.prepareStatement(presentTable);
+			 
+			 createChild.executeUpdate();
+			 createHelper.executeUpdate();
+			 createGift.executeUpdate();
+			 createPresent.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }
