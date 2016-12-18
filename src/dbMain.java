@@ -15,6 +15,7 @@ public class dbMain {
 		
 		RetrieveInfo info = new RetrieveInfo(conn);
 		info.printChildInfo(1001);
+		info.printHelperInfo(200);
 	}
 
 }

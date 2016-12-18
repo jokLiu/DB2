@@ -64,58 +64,86 @@ public class RetrieveInfo {
 			System.out.println("SQL exception");
 			System.exit(1);
 		}
+		
+		System.out.println(childInfo.getName());
 	}
 	
 	
 	public void printHelperInfo(int lshid)
 	{
-		HelperInfo childInfo = new HelperInfo();
+		HelperInfo helperInfo = new HelperInfo();
+		
+		try {
+			PreparedStatement helper = conn.prepareStatement("select H.slhid, H.name " + " from SantasLittleHelper H where H.slhid= ?");
+			
+			
+			PreparedStatement child = conn
+					.prepareStatement("SELECT Ch.cid, Ch.name, Ch.address "
+									+ " FROM Child Ch "
+									+ "WHERE Ch.cid IN "
+										+ "(SELECT C.cid "
+							   			+ "FROM Child C, Present P "
+							   			+ "WHERE P.slhid = ? AND P.cid = C.cid);");
+			
+			PreparedStatement presents = conn.prepareStatement("SELECT G.gid, G.description "
+															 + "FROM Gift G, Present P "
+															 + "WHERE P.cid = ? AND P.slhid = ? AND G.gid = P.gid ;");
+			
+			presents.setInt(2, lshid);
+			
+			helper.setInt(1, lshid);
+			child.setInt(1, lshid);
+			ResultSet helperRes = helper.executeQuery();
+			ResultSet childRes = child.executeQuery();
+			
+			
+			int hid ;
+			String name;
+			
+			while(helperRes.next())
+			{
+				hid = Integer.parseInt(helperRes.getString("slhid"));
+				name = helperRes.getString("name");
+				helperInfo.setSlhid(hid);
+				helperInfo.setName(name);
+			}
+			
+			int cid;
+			String chName = null;
+			String address = null;
+			ChildInfo chInfo;
+			while(childRes.next())
+			{
+				chInfo = new ChildInfo();
+				
+				cid = Integer.parseInt(childRes.getString("cid"));
+				chName = childRes.getString("name");
+				address = childRes.getString("address");
+				
+				chInfo.setCid(cid);
+				chInfo.setName(chName);
+				chInfo.setAddress(address);
+
+				presents.setInt(1, cid);
+				ResultSet childPres = presents.executeQuery();
+				while(childPres.next())
+				{
+					int gid ;
+					String desc = null;
+					gid = Integer.parseInt(childPres.getString("gid"));
+					desc = childPres.getString("description");
+					chInfo.addGift(gid, desc);
+				}
+				
+				helperInfo.addChildInfo(chInfo);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
-	/**
-	 * Test.
-	 */
-	private void test() {
-		try {
-			PreparedStatement studentQuery = conn.prepareStatement("SELECT * FROM Child Where cid=1001 ");
-
-			PreparedStatement gifts = conn.prepareStatement(
-					"select G.gid, G.description from Present P, Gift G " + " where P.cid=1001 AND G.gid = P.gid");
-
-			PreparedStatement helper = conn
-					.prepareStatement("select H.slhid, H.name " + " from SantasLittleHelper H where H.slhid= 200");
-
-			PreparedStatement child = conn
-					.prepareStatement("select H.slhid, H.name " + " from SantasLittleHelper H where H.slhid= 200");
-
-			ResultSet rs = studentQuery.executeQuery();
-			ResultSet rs2 = gifts.executeQuery();
-
-			String title = null;
-			String gid = null;
-			String desc = null;
-			// Now interate through the books just picking up the title
-			while (rs.next()) {
-				title = rs.getString("name");
-				System.out.println(title);
-			}
-
-			while (rs2.next()) {
-				gid = rs2.getString("gid");
-				desc = rs2.getString("description");
-				System.out.println(gid + " " + desc);
-
-			}
-		} catch (SQLException sqlE) {
-			System.out.println("SQL code is broken");
-
-		}
-
-		// Now, just tidy up by closing connection
-		try {
-			conn.close();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
+	
 }
