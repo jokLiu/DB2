@@ -170,10 +170,9 @@ public class CreateAndPopulate {
 		
 		
 		try {
-			String child = "INSERT INTO Child (cid, name, address) " +
-					   "VALUES (? , ?, ?); ";
 			
-			PreparedStatement singleChild = conn.prepareStatement(child);
+			PreparedStatement singleChild = conn.prepareStatement("INSERT INTO Child (cid, name, address) " +
+					   "VALUES (? , ?, ?); ");
 			for(int i=1; i<=1000; i++)
 			{
 				singleChild.setInt(1, i);
@@ -183,10 +182,10 @@ public class CreateAndPopulate {
 			}
 			
 			
-			String helper = "INSERT INTO SantasLittleHelper (slhid, name) " +
-					   "VALUES (? , ?); ";
 			
-			PreparedStatement singleHelper = conn.prepareStatement(helper);
+			
+			PreparedStatement singleHelper = conn.prepareStatement("INSERT INTO SantasLittleHelper (slhid, name) " +
+					   "VALUES (? , ?); ");
 			for(int i=1; i<=100; i++)
 			{
 				singleHelper.setInt(1, i);
@@ -194,10 +193,10 @@ public class CreateAndPopulate {
 				singleHelper.executeUpdate();
 			}
 			
-			String gift = "INSERT INTO Gift (gid, description) " +
-					   "VALUES (? , ?); ";
+	
 			
-			PreparedStatement singleGift = conn.prepareStatement(gift);
+			PreparedStatement singleGift = conn.prepareStatement("INSERT INTO Gift (gid, description) " +
+					   "VALUES (? , ?); ");
 			for(int i=1; i<=100; i++)
 			{
 				singleGift.setInt(1, i);
@@ -206,10 +205,9 @@ public class CreateAndPopulate {
 			}
 			
 			
-			String present = "INSERT INTO Present (gid, cid, slhid) " +
-			         "VALUES (? , ?, ?); ";
 	
-			PreparedStatement singlePresent = conn.prepareStatement(present);
+			PreparedStatement singlePresent = conn.prepareStatement("INSERT INTO Present (gid, cid, slhid) " +
+			         "VALUES (? , ?, ?); ");
 			for(int i=1; i<=100; i++)
 			{
 				singlePresent.setInt(1, i);
@@ -218,6 +216,47 @@ public class CreateAndPopulate {
 				singlePresent.executeUpdate();
 				
 				
+			}
+			
+//			sufficient realistic data
+			singleChild.setInt(1, 1001);
+			singleChild.setString(2, ("Sim Lucas"));
+			singleChild.setString(3, "96 Pershore Road" );
+			singleChild.executeUpdate();
+			
+			
+			singlePresent.setInt(2, 1001);
+			for(int i = 101; i<=151; i++)
+			{
+				singleGift.setInt(1, i);
+				singleGift.setString(2, ("Chocolate bar with filling number- " + i));
+				singleGift.executeUpdate();
+				
+				singleHelper.setInt(1, i);
+				singleHelper.setString(2, "Little Santa " + i);
+				singleHelper.executeUpdate();
+			
+				singlePresent.setInt(1, i);
+				singlePresent.setInt(3, i);
+				singlePresent.executeUpdate();
+			}
+			
+			
+//			another set of realistic data
+			
+			singleHelper.setInt(1, 200);
+			singleHelper.setString(2, "Lead Helper Jean");
+			singleHelper.executeUpdate();
+			
+			singlePresent.setInt(3, 200);
+			for(int i=1 ; i<=10; i++)
+			{
+				for(int j=1; j<=5; j++)
+				{
+					singlePresent.setInt(1, i);
+					singlePresent.setInt(2, j);
+					singlePresent.executeUpdate();
+				}
 			}
 			
 		} catch (SQLException e) {
@@ -235,17 +274,35 @@ public class CreateAndPopulate {
 	{
 		 try {
 	        	PreparedStatement studentQuery = conn.prepareStatement(
-	        		"SELECT * FROM Child");
-	        
-	        
+	        		"SELECT * FROM Child Where cid=1001 ");
+	        	
+	        	
+	        		PreparedStatement gifts = conn.prepareStatement( "select G.gid, G.description from Present P, Gift G "
+	        		+ " where P.cid=1001 AND G.gid = P.gid");
+	
+	        		
+	        		PreparedStatement helper = conn.prepareStatement("select H.slhid, H.name "
+	        			+ " from SantasLittleHelper H where H.slhid= 200");
+	        		
+	        		
 	        	ResultSet rs = studentQuery.executeQuery();
-	        
+	        	ResultSet rs2 = gifts.executeQuery();
+	        	
 	        	String title = null;
-	        
+	        	String gid = null;
+	        	String desc = null;
 	        	// Now interate through the books just picking up the title
 	        	while (rs.next()) {
 	        		title= rs.getString("name");
 	        		System.out.println(title);
+	        	}
+	        	
+	        	while(rs2.next())
+	        	{
+	        		gid = rs2.getString("gid");
+	        		desc = rs2.getString("description");
+	        		System.out.println(gid + " " + desc);
+	        		
 	        	}
 	        } catch (SQLException sqlE)
 	        { System.out.println("SQL code is broken");
