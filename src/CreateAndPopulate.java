@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CreateAndPopulate {
@@ -99,6 +100,9 @@ public class CreateAndPopulate {
 	private void newTables()
 	{
 		createTables();
+		populate();
+		test();
+		
 	}
 	
 	private void createTables()
@@ -122,7 +126,7 @@ public class CreateAndPopulate {
 			
 			String giftTable   = "CREATE TABLE Gift(" +
 								  "gid		INTEGER," +
-								  "DESCRIPTION TEXT," +
+								  "description TEXT," +
 								  "PRIMARY KEY (gid)" +
 								  ");";
 			
@@ -159,5 +163,100 @@ public class CreateAndPopulate {
 			e.printStackTrace();
 		}
 		
+	}
+
+	private void populate()
+	{
+		
+		
+		try {
+			String child = "INSERT INTO Child (cid, name, address) " +
+					   "VALUES (? , ?, ?); ";
+			
+			PreparedStatement singleChild = conn.prepareStatement(child);
+			for(int i=1; i<=1000; i++)
+			{
+				singleChild.setInt(1, i);
+				singleChild.setString(2, ("John "+i));
+				singleChild.setString(3, i + " Birstol Road" );
+				singleChild.executeUpdate();
+			}
+			
+			
+			String helper = "INSERT INTO SantasLittleHelper (slhid, name) " +
+					   "VALUES (? , ?); ";
+			
+			PreparedStatement singleHelper = conn.prepareStatement(helper);
+			for(int i=1; i<=100; i++)
+			{
+				singleHelper.setInt(1, i);
+				singleHelper.setString(2, ("Snowy "+i));
+				singleHelper.executeUpdate();
+			}
+			
+			String gift = "INSERT INTO Gift (gid, description) " +
+					   "VALUES (? , ?); ";
+			
+			PreparedStatement singleGift = conn.prepareStatement(gift);
+			for(int i=1; i<=100; i++)
+			{
+				singleGift.setInt(1, i);
+				singleGift.setString(2, ("Soft and fluffy bear with sound " + i));
+				singleGift.executeUpdate();
+			}
+			
+			
+			String present = "INSERT INTO Present (gid, cid, slhid) " +
+			         "VALUES (? , ?, ?); ";
+	
+			PreparedStatement singlePresent = conn.prepareStatement(present);
+			for(int i=1; i<=100; i++)
+			{
+				singlePresent.setInt(1, i);
+				singlePresent.setInt(2, i);
+				singlePresent.setInt(3, i);
+				singlePresent.executeUpdate();
+				
+				
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		//PreparedStatement chil= conn
+	}
+
+	
+	
+	private void test()
+	{
+		 try {
+	        	PreparedStatement studentQuery = conn.prepareStatement(
+	        		"SELECT * FROM Child");
+	        
+	        
+	        	ResultSet rs = studentQuery.executeQuery();
+	        
+	        	String title = null;
+	        
+	        	// Now interate through the books just picking up the title
+	        	while (rs.next()) {
+	        		title= rs.getString("name");
+	        		System.out.println(title);
+	        	}
+	        } catch (SQLException sqlE)
+	        { System.out.println("SQL code is broken");
+	        
+	        }
+	        
+	        //Now, just tidy up by closing connection
+	        try {
+	            conn.close();
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
 	}
 }
