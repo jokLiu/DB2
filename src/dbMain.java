@@ -1,5 +1,7 @@
 import java.sql.Connection;
 
+import javax.swing.JFrame;
+
 public class dbMain {
 
 	public static void main(String[] args) {
@@ -14,8 +16,16 @@ public class dbMain {
 		CreateAndPopulate cr = new CreateAndPopulate(conn);
 		
 		RetrieveInfo info = new RetrieveInfo(conn);
-		info.printChildInfo(1001);
-		info.printHelperInfo(200);
+		View view = new View();
+		
+		
+		InfoController cont = new InfoController(info, view);
+		view.registerListener(cont);
+
+		view.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		view.setSize(400, 300);
+		view.pack();
+		view.setVisible(true);
 	}
 
 }

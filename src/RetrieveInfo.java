@@ -17,7 +17,7 @@ public class RetrieveInfo {
 		this.conn = conn;
 	}
 	
-	public void printChildInfo(int cid)
+	public ChildInfo printChildInfo(int cid)
 	{
 		ChildInfo childInfo = new ChildInfo();
 		
@@ -65,11 +65,11 @@ public class RetrieveInfo {
 			System.exit(1);
 		}
 		
-		System.out.println(childInfo.getName());
+		return childInfo;
 	}
 	
 	
-	public void printHelperInfo(int lshid)
+	public HelperInfo printHelperInfo(int lshid)
 	{
 		HelperInfo helperInfo = new HelperInfo();
 		
@@ -142,6 +142,7 @@ public class RetrieveInfo {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return helperInfo;
 
 	}
 	
