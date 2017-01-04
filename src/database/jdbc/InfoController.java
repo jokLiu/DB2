@@ -1,3 +1,4 @@
+package database.jdbc;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,6 +13,8 @@ public class InfoController implements ActionListener {
 		this.model = model;
 		this.view = view;
 	}
+	
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String selection = view.getTypeOfSelection();
@@ -20,8 +23,10 @@ public class InfoController implements ActionListener {
 		{
 			case View.childInfo :
 				view.updateChild(model.printChildInfo(pk));
+				break;
 			case View.helperInfo :
 				view.updateHelper(model.printHelperInfo(pk));
+				break;
 		}
 		view.repaint();
 		

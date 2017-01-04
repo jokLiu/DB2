@@ -1,3 +1,4 @@
+package database.jdbc;
 
 public class GiftInfo {
 	private int gid;

@@ -1,31 +1,34 @@
+package database.jdbc;
+
 import java.sql.Connection;
 
 import javax.swing.JFrame;
 
-public class dbMain {
+import database.createAndPopulate.Connect;
+
+public class manageDBmain {
 
 	public static void main(String[] args) {
-		Connection conn =null ;	
+		
 		String name = "jxl706";
 		String psw = "jvrhx1oucf";
 		
-		Connect connection = new Connect(conn, name, psw);
-		conn = connection.getConnection();
+		//connecting to database
+		Connect connection = new Connect(name, psw);
+		Connection conn = connection.getConnection();
 		
-		
-		CreateAndPopulate cr = new CreateAndPopulate(conn);
-		
+		//class for querying and managing database
 		RetrieveInfo info = new RetrieveInfo(conn);
-		View view = new View();
 		
-		
+		//GUI for the database
+		View view = new View(conn);
 		InfoController cont = new InfoController(info, view);
 		view.registerListener(cont);
-
 		view.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		view.setSize(400, 300);
-		view.pack();
 		view.setVisible(true);
+		view.pack();
+
 	}
 
 }

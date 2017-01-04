@@ -1,3 +1,4 @@
+package database.jdbc;
 /*
  * 
  */
@@ -61,6 +62,7 @@ public class RetrieveInfo {
 			}
 			
 		} catch (SQLException e) {
+			//TODO print error message
 			System.out.println("SQL exception");
 			System.exit(1);
 		}
@@ -139,7 +141,7 @@ public class RetrieveInfo {
 			}
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			// TODO print the error message
 			e.printStackTrace();
 		}
 		return helperInfo;

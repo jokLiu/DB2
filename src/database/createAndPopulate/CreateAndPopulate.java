@@ -1,3 +1,4 @@
+package database.createAndPopulate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -25,10 +26,13 @@ public class CreateAndPopulate {
 
 		this.conn = conn;
 		
+	}
+	
+	public void prepareDatabse()
+	{
 		deleteTables();
 		newTables();
-		conn = this.conn;
-
+		
 	}
 
 
@@ -206,6 +210,6 @@ public class CreateAndPopulate {
 		System.out.println("Database is ready!");
 		
 	}
-
+	
 	
 }
