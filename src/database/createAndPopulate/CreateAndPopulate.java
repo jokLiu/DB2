@@ -1,7 +1,11 @@
 package database.createAndPopulate;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Random;
 
 /**
  * The Class CreateAndPopulate.
@@ -25,9 +29,15 @@ public class CreateAndPopulate {
 	public CreateAndPopulate(Connection conn) {
 
 		this.conn = conn;
-		
 	}
 	
+	
+	
+	/**
+	 * Prepare database for use
+	 * -delete tables
+	 * -create a new ones
+	 */
 	public void prepareDatabse()
 	{
 		deleteTables();
@@ -40,12 +50,14 @@ public class CreateAndPopulate {
 	 * Delete previous tables from the database (clean database)
 	 */
 	private void deleteTables() {
-		System.out.println("2/5  Deleting all the tables");
+		System.out.println("Deleting all the tables");
 
 		try {
+			//Dropping the schema of the database
 			PreparedStatement del = conn.prepareStatement("DROP SCHEMA public CASCADE;");
 			del.execute();
 
+			//Recreating the schema
 			PreparedStatement setClean = conn.prepareStatement("CREATE SCHEMA public;");
 			setClean.execute();
 
@@ -53,7 +65,7 @@ public class CreateAndPopulate {
 			System.out.println("Failed to delete tables ");
 			System.exit(1);
 		}
-		System.out.println("3/5  Successfully cleaned the tables");
+		System.out.println("Successfully cleaned the tables");
 	}
 
 	/**
@@ -69,32 +81,33 @@ public class CreateAndPopulate {
 	 * Creates new tables.
 	 */
 	private void createTables() {
-		System.out.println("3/5  Creating new tables");
+		System.out.println("Creating new tables");
 		try {
-
+			//statement for child table
 			PreparedStatement createChild = conn.prepareStatement(  "CREATE TABLE Child("
 																  + "cid 		INTEGER," 
-																  + "name 		TEXT 		NOT NULL,"
+																  + "name 		TEXT 		NOT NULL," 
 																  + "address 	CHAR(30) 	NOT NULL," 
 																  + "PRIMARY KEY (cid) " 
 																  + ");");
 			
 			
 			
-			
+			//statement for SantasLittleHelper table
 			PreparedStatement createHelper = conn.prepareStatement( "CREATE TABLE SantasLittleHelper(" 
 																  + "slhid	INTEGER," 
 																  + "name 	TEXT 	NOT NULL,"
 																  + "PRIMARY KEY (slhid)" 
 																  + ");");
 			
-						
+			//statement for Gift table			
 			PreparedStatement createGift = conn.prepareStatement(   "CREATE TABLE Gift(" 
-															      + "gid		INTEGER," 
+															      + "gid		 INTEGER," 
 															      + "description TEXT," 
 															      + "PRIMARY KEY (gid)"
 															      + " );" ); 
-					
+			
+			//statement for present table		
 			PreparedStatement createPresent = conn.prepareStatement("CREATE TABLE Present(" 
 																  + "gid		INTEGER," 
 																  + "cid 		INTEGER,"
@@ -109,7 +122,7 @@ public class CreateAndPopulate {
 																  + "ON DELETE CASCADE "
 																  + "ON UPDATE CASCADE " 
 																  + ");");
-
+			//executing all the statements
 			createChild.executeUpdate();
 			createHelper.executeUpdate();
 			createGift.executeUpdate();
@@ -119,7 +132,35 @@ public class CreateAndPopulate {
 			System.out.println("Failed to create new tables!");
 			System.exit(1);
 		}
-		System.out.println("4/5  Tables created");
+		System.out.println("Tables created");
+	}
+	
+	
+	/**
+	 * Gets the names.
+	 *
+	 * @return the names
+	 */
+	private String[] getNames()
+	{
+		String[] names = new String[32];
+		int trackItem = 0;
+		try {
+			
+			BufferedReader reader = new BufferedReader(new FileReader("src/database/createAndPopulate/names.txt"));
+			
+			String temp;
+			while((temp = reader.readLine()) != null)
+			{
+				names[trackItem] =temp;
+				trackItem++;
+			}
+			
+		} catch (IOException e) {
+			System.err.println("Failed to read from file");
+			System.exit(1);
+		} 
+		return names;
 	}
 	
 	
@@ -127,26 +168,36 @@ public class CreateAndPopulate {
 	 * Populate.
 	 */
 	private void populate() {
-		System.out.println("4/5  Populating tables");
+		System.out.println("Populating tables");
 		try {
+			//32 random names
+			String[] names = getNames();
 
+			//Creating 1024 children 
 			PreparedStatement singleChild = conn
 					.prepareStatement("INSERT INTO Child (cid, name, address) " + "VALUES (? , ?, ?); ");
-			for (int i = 1; i <= 1000; i++) {
-				singleChild.setInt(1, i);
-				singleChild.setString(2, ("John " + i));
-				singleChild.setString(3, i + " Birstol Road");
-				singleChild.executeUpdate();
+			
+			
+			for (int i = 1; i <= names.length; i++) {
+				for(int j = 1; j<= names.length; j++){
+					int id = ((i-1)*names.length)+j;
+					singleChild.setInt(1, id);
+					singleChild.setString(2, names[i-1] + " " + names[j-1]);
+					singleChild.setString(3, id + " Birstol Road");
+					singleChild.executeUpdate();
+				}
 			}
 
+			//Creating 32 Santa's Little helpers
 			PreparedStatement singleHelper = conn
 					.prepareStatement("INSERT INTO SantasLittleHelper (slhid, name) " + "VALUES (? , ?); ");
-			for (int i = 1; i <= 100; i++) {
+			for (int i = 1; i <= names.length; i++) {
 				singleHelper.setInt(1, i);
-				singleHelper.setString(2, ("Snowy " + i));
+				singleHelper.setString(2, names[i-1]);
 				singleHelper.executeUpdate();
 			}
 
+			//Creating 100 Gifts
 			PreparedStatement singleGift = conn
 					.prepareStatement("INSERT INTO Gift (gid, description) " + "VALUES (? , ?); ");
 			for (int i = 1; i <= 100; i++) {
@@ -155,23 +206,24 @@ public class CreateAndPopulate {
 				singleGift.executeUpdate();
 			}
 
+			//Creating 100 Presents
 			PreparedStatement singlePresent = conn
 					.prepareStatement("INSERT INTO Present (gid, cid, slhid) " + "VALUES (? , ?, ?); ");
 			for (int i = 1; i <= 100; i++) {
 				singlePresent.setInt(1, i);
 				singlePresent.setInt(2, i);
-				singlePresent.setInt(3, i);
+				singlePresent.setInt(3, (new Random()).nextInt(names.length)+1);
 				singlePresent.executeUpdate();
 
 			}
 
-			// sufficient realistic data
-			singleChild.setInt(1, 1001);
+			// sufficient realistic data for a single child
+			singleChild.setInt(1, 1025);
 			singleChild.setString(2, ("Sim Lucas"));
 			singleChild.setString(3, "96 Pershore Road");
 			singleChild.executeUpdate();
 
-			singlePresent.setInt(2, 1001);
+			singlePresent.setInt(2, 1025);
 			for (int i = 101; i <= 151; i++) {
 				singleGift.setInt(1, i);
 				singleGift.setString(2, ("Chocolate bar with filling number- " + i));
@@ -186,13 +238,13 @@ public class CreateAndPopulate {
 				singlePresent.executeUpdate();
 			}
 
-			// another set of realistic data
+			// another set of realistic data for helper
 
-			singleHelper.setInt(1, 200);
+			singleHelper.setInt(1, 33);
 			singleHelper.setString(2, "Lead Helper Jean");
 			singleHelper.executeUpdate();
 
-			singlePresent.setInt(3, 200);
+			singlePresent.setInt(3, 33);
 			for (int i = 1; i <= 10; i++) {
 				for (int j = 1; j <= 5; j++) {
 					singlePresent.setInt(1, i);
@@ -206,7 +258,7 @@ public class CreateAndPopulate {
 			System.exit(1);
 		}
 
-		System.out.println("5/5  Tables succesfully populated");
+		System.out.println("Tables succesfully populated");
 		System.out.println("Database is ready!");
 		
 	}

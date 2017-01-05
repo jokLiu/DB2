@@ -6,10 +6,18 @@ import javax.swing.JFrame;
 
 import database.createAndPopulate.Connect;
 
+/**
+ * The Class manageDBmain.
+ * Main class for managing the JDBC part.
+ */
 public class manageDBmain {
 
+	/**
+	 * The main method.
+	 */
 	public static void main(String[] args) {
 		
+		//log in information 
 		String name = "jxl706";
 		String psw = "jvrhx1oucf";
 		

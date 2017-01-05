@@ -15,12 +15,20 @@ public class Connect {
 		this.psw = psw;
 	}
 
+	/**
+	 * Gets the connection.
+	 *
+	 * @return the connection
+	 */
 	public Connection getConnection() {
 		registerDriver();
 		connectServer();
 		return conn;
 	}
 
+	/**
+	 * Close connection.
+	 */
 	public void closeConnection() {
 		try {
 			conn.close();
@@ -34,7 +42,7 @@ public class Connect {
 	 */
 	private void registerDriver() {
 		System.out.println("Setting up database.");
-		System.out.println("0/5  Register postgreSQL driver");
+		System.out.println("Register postgreSQL driver");
 		try {
 
 			// Load the PostgreSQL JDBC driver
@@ -47,14 +55,14 @@ public class Connect {
 			System.exit(1);
 		}
 
-		System.out.println("1/5  PostgreSQL driver registered.");
+		System.out.println("PostgreSQL driver registered.");
 	}
 
 	/**
 	 * Connect to database server.
 	 */
 	private void connectServer() {
-		System.out.println("1/5  Connecting database");
+		System.out.println("Connecting database");
 		try {
 			conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/mydb", "postgres", "258453Ak");
 			// conn =
@@ -66,7 +74,7 @@ public class Connect {
 			System.exit(1);
 		}
 
-		System.out.println(conn != null ? "2/5  Database accessed!" : "Failed to make connection");
+		System.out.println(conn != null ? "Database accessed!" : "Failed to make connection");
 		if (conn == null)
 			System.exit(1);
 	}
