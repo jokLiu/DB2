@@ -128,6 +128,7 @@ public class View extends JFrame {
 			try {
 				//closing the connection
 				conn.close();
+				System.out.println("Connection closed");
 			} catch (SQLException ex) {
 				//if fails we display the error window message
 				JOptionPane.showMessageDialog(new JFrame(), "Failed to close the connection!", "Error",
