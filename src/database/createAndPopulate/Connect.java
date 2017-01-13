@@ -64,10 +64,10 @@ public class Connect {
 	private void connectServer() {
 		System.out.println("Connecting database");
 		try {
-			conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/mydb", "postgres", "258453Ak");
-//			 conn =
-//			 DriverManager.getConnection("jdbc:postgresql://mod-intro-databases/jxl706",
-//			 name, psw);
+//			conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/mydb", "postgres", "258453Ak");
+			 conn =
+			 DriverManager.getConnection("jdbc:postgresql://mod-intro-databases/jxl706",
+			 name, psw);
 		} catch (SQLException e) {
 			System.out.println("Ooops, couldn't get a connection");
 			System.out.println("Check that <username> & <password> are right");

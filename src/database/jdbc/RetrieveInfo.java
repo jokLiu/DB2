@@ -136,6 +136,7 @@ public class RetrieveInfo {
 			
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(new JFrame(), "Badly designed code", "Error", JOptionPane.WARNING_MESSAGE);
+			System.exit(1);
 		}
 		
 		return childInfo;
@@ -213,6 +214,7 @@ public class RetrieveInfo {
 			
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(new JFrame(), "Badly designed code", "Error", JOptionPane.WARNING_MESSAGE);
+			System.exit(1);
 		}
 		return helperInfo;
 
