@@ -103,7 +103,7 @@ public class CreateAndPopulate {
 			//statement for Gift table			
 			PreparedStatement createGift = conn.prepareStatement(   "CREATE TABLE Gift(" 
 															      + "gid		 INTEGER," 
-															      + "description TEXT," 
+															      + "description TEXT 	NOT NULL," 
 															      + "PRIMARY KEY (gid)"
 															      + " );" ); 
 			
@@ -155,6 +155,7 @@ public class CreateAndPopulate {
 				names[trackItem] =temp;
 				trackItem++;
 			}
+			reader.close();
 			
 		} catch (IOException e) {
 			System.err.println("Failed to read from file");
@@ -212,9 +213,8 @@ public class CreateAndPopulate {
 			for (int i = 1; i <= 100; i++) {
 				singlePresent.setInt(1, i);
 				singlePresent.setInt(2, i);
-				singlePresent.setInt(3, (new Random()).nextInt(names.length)+1);
+				singlePresent.setInt(3, (new Random()).nextInt(names.length-1)+2);
 				singlePresent.executeUpdate();
-
 			}
 
 			// sufficient realistic data for a single child

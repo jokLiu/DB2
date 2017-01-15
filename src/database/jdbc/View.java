@@ -21,7 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class View.
  */
@@ -52,23 +52,23 @@ public class View extends JFrame {
 	 *            the connection to close after exit button is pressed
 	 */
 	public View(Connection conn) {
-		
+
 		// calls the constructor of the super class
 		super("Information");
 
-		//main panel for this frame
+		// main panel for this frame
 		JPanel displayPanel = new JPanel();
 		displayPanel.setLayout(new GridBagLayout());
 
-		//new JLabel
+		// new JLabel
 		JLabel searchLabel = new JLabel("Select Type of Search:");
-		
-		//adding all the types to the selection box
+
+		// adding all the types to the selection box
 		box = new JComboBox<>();
 		box.addItem(childInfo);
 		box.addItem(helperInfo);
 
-		//adding the label and the selection box to the main panel
+		// adding the label and the selection box to the main panel
 		JPanel panel1 = new JPanel();
 		panel1.add(searchLabel);
 		panel1.add(box);
@@ -78,13 +78,13 @@ public class View extends JFrame {
 		constraints.anchor = GridBagConstraints.WEST;
 		displayPanel.add(panel1, constraints);
 
-		//new JLabel 
+		// new JLabel
 		JLabel display = new JLabel("Insert Primary Key:      ");
-		
-		//field for inputing the id
+
+		// field for inputing the id
 		text = new JTextField(15);
-		
-		//adding the label and the text field for the id to the main panel
+
+		// adding the label and the text field for the id to the main panel
 		JPanel panel2 = new JPanel();
 		panel2.add(display);
 		panel2.add(text);
@@ -94,53 +94,52 @@ public class View extends JFrame {
 		constraints2.anchor = GridBagConstraints.WEST;
 		displayPanel.add(panel2, constraints2);
 
-		
-		//the main text block for the information to display
+		// the main text block for the information to display
 		JTextArea block1 = new JTextArea(20, 45);
 		block1.setEditable(false);
 		block1.setLineWrap(true);
 		block1.setWrapStyleWord(true);
 		block1.setPreferredSize(new Dimension(300, 300));
-		
-		//creating the scroll pane (if there are a lot data to display)
+
+		// creating the scroll pane (if there are a lot data to display)
 		block = new JScrollPane(block1);
-		
-		//adding the 
+
+		// adding the
 		JPanel panel3 = new JPanel();
 		panel3.add(block);
 		panel3.setAlignmentX(Component.LEFT_ALIGNMENT);
-		GridBagConstraints constraints3= new GridBagConstraints();
+		GridBagConstraints constraints3 = new GridBagConstraints();
 		constraints3.gridy = displayPanel.getComponentCount();
 		constraints.anchor = GridBagConstraints.SOUTH;
 		displayPanel.add(panel3, constraints3);
 
-		//creating a buttons
+		// creating a buttons
 		JPanel panel4 = new JPanel();
-		
-		//search button for searching information
+
+		// search button for searching information
 		search = new JButton("Search");
-		
-		//exit button for closing the connection and closing the system
+
+		// exit button for closing the connection and closing the system
 		JButton exit = new JButton("Exit");
 
-		//adding the listener to the exit button
+		// adding the listener to the exit button
 		exit.addActionListener(e -> {
 			try {
-				//closing the connection
+				// closing the connection
 				conn.close();
 				System.out.println("Connection closed");
 			} catch (SQLException ex) {
-				//if fails we display the error window message
+				// if fails we display the error window message
 				JOptionPane.showMessageDialog(new JFrame(), "Failed to close the connection!", "Error",
 						JOptionPane.WARNING_MESSAGE);
 			} finally {
-				//and exit in all the cases
+				// and exit in all the cases
 				System.exit(1);
 			}
 
 		});
 
-		//adding the buttons to the main panel
+		// adding the buttons to the main panel
 		panel4.add(search);
 		panel4.add(exit);
 		panel4.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -149,7 +148,7 @@ public class View extends JFrame {
 		gbc4.anchor = GridBagConstraints.SOUTH;
 		displayPanel.add(panel4, gbc4);
 
-		//adding the main panel to the frame
+		// adding the main panel to the frame
 		add(displayPanel, BorderLayout.CENTER);
 		pack();
 
@@ -167,8 +166,7 @@ public class View extends JFrame {
 	}
 
 	/**
-	 * Gets the type of selection.
-	 * Either helper or child
+	 * Gets the type of selection. Either helper or child
 	 *
 	 * @return the type of selection
 	 */
@@ -185,45 +183,78 @@ public class View extends JFrame {
 		try {
 			return Integer.valueOf(text.getText());
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(new JFrame(), "Input a correct ID!", "Error", JOptionPane.WARNING_MESSAGE);
-			return -1;
+			return 0;
 		}
 
 	}
 
 	/**
-	 * Update child.
-	 * updates the text field by the information about a specific child.
+	 * Update child. updates the text field by the information about a specific
+	 * child.
 	 *
 	 * @param info
 	 *            the info
 	 */
 	public void updateChild(ChildInfo info) {
 
-		if(info.getCid() == 0)  printError();
-		else{
+		if (info.getCid() == 0)
+			printError("Input a correct ID!");
+		else {
 			ArrayList<GiftInfo> gifts = info.getGifts();
-	
+
+			if(gifts.isEmpty()) printError("There are no gifts for this child!");
 			JPanel mainPanel = new JPanel(new GridLayout(gifts.size() + 5, 2));
-	
+
 			addComponent(mainPanel, new JTextField("Child ID: "));
-	
+
 			addComponent(mainPanel, new JTextField(String.valueOf(info.getCid())));
-	
+
 			addChildToPanel(mainPanel, info);
-	
+
 			block.setViewportView(mainPanel);
 			repaint();
 		}
 	}
-	
-	
+
+	/**
+	 * Update helper. updates the text field by the information about a specific
+	 * helper;
+	 *
+	 * @param info
+	 *            the info
+	 */
+	public void updateHelper(HelperInfo info) {
+
+		if (info.getSlhid() == 0)
+			printError("Input a correct ID!");
+		else {
+			JPanel mainPanel = new JPanel(new GridLayout(countSize(info), 2));
+
+			addComponent(mainPanel, new JTextField("Helper's ID: "));
+
+			addComponent(mainPanel, new JTextField(String.valueOf(info.getSlhid())));
+
+			addComponent(mainPanel, new JTextField("Helper's name: "));
+
+			addComponent(mainPanel, new JTextField(info.getName()));
+
+			if(info.getChildInfo().isEmpty()) printError("This helper does no have any deliveries!");
+			for (ChildInfo ch : info.getChildInfo()) {
+				addComponent(mainPanel, new JTextField());
+				addComponent(mainPanel, new JTextField());
+				addChildToPanel(mainPanel, ch);
+			}
+
+			block.setViewportView(mainPanel);
+			repaint();
+		}
+	}
+
 	/**
 	 * Prints the error message.
 	 */
-	private void printError()
-	{
-		JOptionPane.showMessageDialog(new JFrame(), "Input a correct ID!", "Error", JOptionPane.WARNING_MESSAGE);
+	private void printError(String msg) {
+		JOptionPane.showMessageDialog(new JFrame(), msg, "Error" ,JOptionPane.WARNING_MESSAGE);
 	}
 
 	/**
@@ -260,8 +291,7 @@ public class View extends JFrame {
 	}
 
 	/**
-	 * Adds the component to the panel
-	 * and sets disabled and colour
+	 * Adds the component to the panel and sets disabled and colour
 	 *
 	 * @param mainPanel
 	 *            the main panel
@@ -272,39 +302,6 @@ public class View extends JFrame {
 		field.setEnabled(false);
 		field.setDisabledTextColor(Color.BLACK);
 		mainPanel.add(field);
-	}
-
-	/**
-	 * Update helper.
-	 * updates the text field by the information about a specific helper;
-	 *
-	 * @param info
-	 *            the info
-	 */
-	public void updateHelper(HelperInfo info) {
-		
-
-		if(info.getSlhid() == 0)  printError();
-			else{
-			JPanel mainPanel = new JPanel(new GridLayout(countSize(info), 2));
-	
-			addComponent(mainPanel, new JTextField("Helper's ID: "));
-	
-			addComponent(mainPanel, new JTextField(String.valueOf(info.getSlhid())));
-	
-			addComponent(mainPanel, new JTextField("Helper's name: "));
-	
-			addComponent(mainPanel, new JTextField(info.getName()));
-	
-			for (ChildInfo ch : info.getChildInfo()) {
-				addComponent(mainPanel, new JTextField());
-				addComponent(mainPanel, new JTextField());
-				addChildToPanel(mainPanel, ch);
-			}
-	
-			block.setViewportView(mainPanel);
-			repaint();
-		}
 	}
 
 	/**
@@ -321,7 +318,6 @@ public class View extends JFrame {
 			count += 5;
 		}
 		return count;
-
 	}
 
 }
