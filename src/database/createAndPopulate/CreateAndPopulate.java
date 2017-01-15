@@ -87,7 +87,7 @@ public class CreateAndPopulate {
 			PreparedStatement createChild = conn.prepareStatement(  "CREATE TABLE Child("
 																  + "cid 		INTEGER," 
 																  + "name 		TEXT 		NOT NULL," 
-																  + "address 	CHAR(30) 	NOT NULL," 
+																  + "address 	TEXT 		NOT NULL," 
 																  + "PRIMARY KEY (cid) " 
 																  + ");");
 			
